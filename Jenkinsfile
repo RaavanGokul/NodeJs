@@ -22,13 +22,6 @@ pipeline {
     }
     
     stages{
-        
-        stage("Git Clone"){
-            steps {
-                git branch: 'main', credentialsId: 'gitcreds', url: 'https://github.com/RaavanGokul/NodeJs.git'
-            }
-        }
-        
          stage('Install Dependencies') {
             steps {
                 sh 'npm install'
