@@ -12,20 +12,20 @@ pipeline {
     }
 
     environment {
-        NODEJS_SERVER_IP = "172.31.39.158"
+        NODEJS_SERVER_IP = "172.31.4.119"
         NODEJS_SERVER_USER = "ec2-user"
         REMOTE_PATH = "/home/ec2-user/nodejs-app"
     }
 
     tools {
-       nodejs "NodeJS-26.3.0"
+       nodejs "NodeJs-26.7"
     }
     
     stages{
         
         stage("Git Clone"){
             steps {
-                git branch: 'main', credentialsId: 'GitHub_Credentials', url: 'https://github.com/Rushi-Technologies/nodejs-app.git'
+                git branch: 'main', credentialsId: 'gitcreds', url: 'https://github.com/RaavanGokul/NodeJs.git'
             }
         }
         
@@ -37,7 +37,7 @@ pipeline {
 
         stage("Copy Files to Remote Server") {
             steps {
-             sshagent(['NodeJS_Server_SSH_Cred']) {
+             sshagent(['npm-server']) {
                 sh """
                     ssh -o StrictHostKeyChecking=no  $NODEJS_SERVER_USER@$NODEJS_SERVER_IP "mkdir -p $REMOTE_PATH || true"
                     rsync -avz --exclude=node_modules --exclude=.git ./ $NODEJS_SERVER_USER@$NODEJS_SERVER_IP:$REMOTE_PATH/
@@ -48,7 +48,7 @@ pipeline {
 
             stage('Start Node.js Application') {
                 steps {
-                    sshagent(['NodeJS_Server_SSH_Cred']) {
+                    sshagent(['npm-server']) {
                     sh '''
                         ssh $NODEJS_SERVER_USER@$NODEJS_SERVER_IP "
                             cd $REMOTE_PATH &&
@@ -89,7 +89,7 @@ pipeline {
                             <p>Check the full console output <a href="${env.BUILD_URL}">here</a>.</p>
                         </div>
                     </body>
-                    </html>''', mimeType: 'text/html', subject: '${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${buildStatus}', to: 'balajireddy.urs@gmail.com'
+                    </html>''', mimeType: 'text/html', subject: '${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${buildStatus}', to: 'gokulkrishnan3123@gmail.com'
             }
         }
     }
